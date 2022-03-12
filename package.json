@@ -1,5 +1,5 @@
 {
-  "name": "tui-game-of-life-raw",
+  "name": "tui-002-game-of-life",
   "main": "src/main.js",
   "scripts": {
     "dev": "npx webpack --watch",
