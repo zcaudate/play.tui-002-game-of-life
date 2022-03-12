@@ -1,56 +1,59 @@
-const webpack = require("webpack");
+var webpack = require("webpack");
 
-const path = require("path");
+var path = require("path");
 
-const jsx_rule = {
-  test: /\.jsx?$/,
-  use: [
-    { loader: "cache-loader" },
+var jsx_rule = {
+  "test":/\.jsx?$/,
+  "use":[
+    {"loader":"cache-loader"},
     {
-      loader: "@sucrase/webpack-loader",
-      options: { transforms: ["jsx"] },
-    },
-  ],
+    "loader":"@sucrase/webpack-loader",
+    "options":{"transforms":["jsx"]}
+  }
+  ]
 };
 
-const RunNodeWebpackPlugin = require("run-node-webpack-plugin");
+var RunNodeWebpackPlugin = require("run-node-webpack-plugin");
 
-const WebpackNodeExternals = require("webpack-node-externals");
+var WebpackNodeExternals = require("webpack-node-externals");
 
-const node_common_config = {
-  entry: "./src/main.js",
-  target: "node",
-  module: { rules: [jsx_rule] },
-  externals: [WebpackNodeExternals()],
+var node_common_config = {
+  "entry":"./src/main.js",
+  "target":"node",
+  "module":{"rules":[jsx_rule]},
+  "externals":[WebpackNodeExternals()]
 };
 
-const node_dev_config = {
-  ...node_common_config,
-  mode: "development",
-  output: { path: path.join(__dirname, "dist"), filename: "main.js" },
-  plugins: [
-    new webpack.IgnorePlugin(/\.(css|less)$/),
-    new webpack.BannerPlugin('require("source-map-support").install();', {
-      raw: true,
-      entryOnly: false,
-    }),
-    new RunNodeWebpackPlugin(),
-  ],
-};
+function node_dev_config({provide}){
+  return Object.assign({},node_common_config,{
+    "mode":"development",
+    "output":{"path":path.join(__dirname,"dist"),"filename":"main.js"},
+    "plugins":[
+        new webpack.BannerPlugin(
+          "require(\"source-map-support\").install();",
+          {"raw":true,"entryOnly":false}
+        ),
+        provide ? new webpack.ProvidePlugin(provide) : null,
+        new RunNodeWebpackPlugin()
+      ].filter(function (x){
+        return x;
+      })
+  });
+}
 
-const node_prod_config = {
-  ...node_common_config,
-  mode: "production",
-  output: { path: path.join(__dirname, "dist"), filename: "main.min.js" },
-  plugins: [new webpack.IgnorePlugin(/\.(css|less)$/)],
-};
+var node_prod_config = Object.assign({},node_common_config,{
+  "mode":"production",
+  "output":{"path":path.join(__dirname,"dist"),"filename":"main.min.js"},
+  "plugins":[]
+});
 
-const node_config = function (env) {
-  if (env.prod) {
+var node_config = function (env){
+  if(env.prod){
     return node_prod_config;
-  } else {
-    return node_dev_config;
+  }
+  else{
+    return node_dev_config({});
   }
 };
 
-module.exports=node_config;
+module.exports = node_config

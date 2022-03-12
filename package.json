@@ -6,9 +6,7 @@
     "package": "npx webpack --env prod"
   },
   "dependencies": {
-    "@use-it/interval": "^1.0.0",
     "blessed": "0.1.81",
-    "lodash": "^4.17.20",
     "raf": "3.4.1",
     "react": "17.0.1",
     "react-blessed": "0.7.0"
