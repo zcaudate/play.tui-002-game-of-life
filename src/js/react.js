@@ -36,7 +36,7 @@ function runIsMounted(mounted){
 // js.react/useIsMounted [163] 
 function useIsMounted(){
   let mounted = React.useRef(true);
-  let [isMounted,runInit] = React.useCallback(runIsMounted(mounted),[]);
+  let [isMounted,runInit] = runIsMounted(mounted);
   React.useEffect(function (){
     runInit();
   },[]);
