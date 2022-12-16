@@ -21,13 +21,14 @@ var PARAMS = {"born":{"min":3,"max":3},"live":{"min":2,"max":3}};
 // play.tui-002-game-of-life.main/gridNew [20] 
 function gridNew(rows,cols){
   let grid = new Array(rows);
+  let y = null;
   for(let y = 0; y < rows; y = (y + 1)){
     grid[y] = new Array(cols);
   }
   return grid;
 }
 
-// play.tui-002-game-of-life.main/gridSeed [28] 
+// play.tui-002-game-of-life.main/gridSeed [29] 
 function gridSeed(grid,rows,cols){
   for(let y = 0; y < rows; y = (y + 1)){
     for(let x = 0; x < cols; x = (x + 1)){
@@ -36,14 +37,14 @@ function gridSeed(grid,rows,cols){
   }
 }
 
-// play.tui-002-game-of-life.main/gridCreate [35] 
+// play.tui-002-game-of-life.main/gridCreate [36] 
 function gridCreate(rows,cols){
   let grid = gridNew(rows,cols);
   gridSeed(grid,rows,cols);
   return grid;
 }
 
-// play.tui-002-game-of-life.main/gridCount [41] 
+// play.tui-002-game-of-life.main/gridCount [42] 
 function gridCount(grid,y,x,rows,cols){
   let sum = 0;
   for(let v = -1; v < 2; v = (v + 1)){
@@ -57,7 +58,7 @@ function gridCount(grid,y,x,rows,cols){
   return sum;
 }
 
-// play.tui-002-game-of-life.main/gridNext [52] 
+// play.tui-002-game-of-life.main/gridNext [53] 
 function gridNext(grid,rows,cols){
   let next = gridNew(rows,cols);
   for(let y = 0; y < rows; y = (y + 1)){
@@ -72,13 +73,13 @@ function gridNext(grid,rows,cols){
       }
       else{
         next[y][x] = curr;
-      };
+      }
     }
   }
   return next;
 }
 
-// play.tui-002-game-of-life.main/Button [72] 
+// play.tui-002-game-of-life.main/Button [73] 
 function Button({action,color,disabled,left,text,top}){
   return (
     <button
@@ -94,14 +95,14 @@ function Button({action,color,disabled,left,text,top}){
       }}
       padding={{"top":1,"right":2,"bottom":1,"left":2}}
       style={{
-        "bg":!disabled ? color : "black",
-        "fg":!disabled ? "white" : "gray",
+        "bg":!disabled ? [color,"black"] : null,
+        "fg":!disabled ? ["white","gray"] : null,
         "focus":{"bold":true}
       }}>
     </button>);
 }
 
-// play.tui-002-game-of-life.main/TimeControl [92] 
+// play.tui-002-game-of-life.main/TimeControl [93] 
 function TimeControl(props){
   return (
     <box shrink={true}>
@@ -130,7 +131,7 @@ function TimeControl(props){
     </box>);
 }
 
-// play.tui-002-game-of-life.main/initialState [120] 
+// play.tui-002-game-of-life.main/initialState [121] 
 function initialState(rows,cols){
   return {
     "rows":rows,
@@ -141,7 +142,7 @@ function initialState(rows,cols){
   };
 }
 
-// play.tui-002-game-of-life.main/GridView [128] 
+// play.tui-002-game-of-life.main/GridView [129] 
 function GridView(props){
   let {cols,grid,rows} = props.state;
   return (
@@ -159,7 +160,7 @@ function GridView(props){
               left={2 * j}
               key={i + "_" + j}
               content=""
-              style={{"bg":(1 == col) ? "yellow" : "black"}}
+              style={{"bg":(1 == col) ? ["yellow","black"] : null}}
               shrink={true}>
             </box>);
         });
@@ -167,7 +168,7 @@ function GridView(props){
     </box>);
 }
 
-// play.tui-002-game-of-life.main/App [150] 
+// play.tui-002-game-of-life.main/App [151] 
 function App(){
   let [state,setState] = React.useState(initialState(ROWS,COLS));
   let next_fn = function (){
@@ -176,11 +177,6 @@ function App(){
       {...state,"counter":counter + 1,"grid":gridNext(grid,rows,cols)}
     );
   };
-  r.useInterval(function (){
-    if(!state.paused){
-      next_fn();
-    }
-  },INTERVAL);
   let actions = {
     "reset":function (){
         let {cols,grid,rows} = state;
@@ -196,6 +192,11 @@ function App(){
         setState({...state,"paused":!paused});
       }
   };
+  r.useInterval(function (){
+    if(!state.paused){
+      next_fn();
+    }
+  },INTERVAL);
   return (
     <box left={2} top={1} shrink={true}>
       <box shrink={true}><TimeControl state={state} fn={actions}></TimeControl></box>
@@ -203,9 +204,9 @@ function App(){
     </box>);
 }
 
-// play.tui-002-game-of-life.main/Screen [185] 
+// play.tui-002-game-of-life.main/Screen [188] 
 function Screen(){
-  const screen = blessed.screen({
+  let screen = blessed.screen({
     "autoPadding":true,
     "smartCSR":true,
     "title":"Tui 002 - Game of Life"
@@ -216,7 +217,6 @@ function Screen(){
   return screen;
 }
 
-// play.tui-002-game-of-life.main/__main__ [195] 
-// 0fadea62-e702-4ae2-b051-37520280f30a
+// play.tui-002-game-of-life.main/__main__ [198] 
 reactBlessed.render((
   <App></App>),Screen());
